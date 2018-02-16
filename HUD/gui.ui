@@ -295,5 +295,24 @@
         </layout>
       </object>
     </child>
+    <child>
+      <object class="ttk.Label" id="isCrep">
+        <property name="text" translatable="yes">Is Crepe ?</property>
+        <layout>
+          <property name="column">2</property>
+          <property name="propagate">True</property>
+          <property name="row">17</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="IsCrepAnswer">
+        <layout>
+          <property name="column">3</property>
+          <property name="propagate">True</property>
+          <property name="row">17</property>
+        </layout>
+      </object>
+    </child>
   </object>
 </interface>

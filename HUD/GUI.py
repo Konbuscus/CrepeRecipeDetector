@@ -10,7 +10,7 @@ class Application:
         #1: Create a builder
         self.builder = builder = pygubu.Builder()
 
-        #2: Load an ui file
+        #2: Load an ui files
         builder.add_from_file('gui.ui')
 
         #3: Create the widget using a master as parent
