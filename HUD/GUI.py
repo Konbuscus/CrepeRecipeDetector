@@ -1,5 +1,3 @@
-import pygubu
-
 import Tkinter as tk
 import pygubu
 
