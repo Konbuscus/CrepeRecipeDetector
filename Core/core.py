@@ -45,7 +45,6 @@ def addDataToCSV(pFile, data):
     f.write('\n' + ';'.join(map(str, data)))
 
 def sigmoid(x):
-    #print x
     return 1/(1 + math.exp(-x))
 
 def derivate(x):
@@ -70,7 +69,6 @@ def learnOne(data):
     tmpFinalError = predictionError(tmpFinalPrediction, y)
 
     for i in range(len(inputsWeights)):
-        weights = inputsWeights[i]
         error = tmpFinalError * hiddenLayerWeights[i]
         tmpErrors.append(error)
 
