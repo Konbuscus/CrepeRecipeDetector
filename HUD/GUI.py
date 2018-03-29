@@ -102,6 +102,9 @@ class Application:
         tmpFinalPrediction, tmpFinalError, tmpFinalX, tmpPredictions, tmpErrors, tmpFinalX = core.learnOne(data)
 
         print "Predict : ", tmpFinalPrediction
+        crp = self.builder.get_object('IsCrepAnswer')
+        crp.delete(0, 1000)
+        crp.insert(0, str(tmpFinalPrediction))
 
 if __name__ == '__main__':
     root = tk.Tk()
