@@ -14,16 +14,29 @@ hiddenLayerWeights = []
 hiddenLayerBiasWeights = []
 finalBiasWeight = 0
 
+inputsDividers = []
+
 def parseDataFile(pFile):
     global header
     global inputData
+
+    inputData = []
 
     f = open(pFile, 'r')
     header = f.readline().split(';')
 
     for line in f.readlines():
-        inputData.append(map(int, line.split(';')))
+        inputData.append(map(float, line.split(';')))
     f.close()
+
+    inputData = np.array(inputData)
+    for i in range(len(inputData[0])):
+        col = inputData[:,i]
+        maxCol = max(1.0,max(col))
+        col /= float(maxCol)
+        inputsDividers.append(maxCol)
+
+    print inputData
 
     random.shuffle(inputData)
 
@@ -32,6 +45,7 @@ def addDataToCSV(pFile, data):
     f.write('\n' + ';'.join(map(str, data)))
 
 def sigmoid(x):
+    #print x
     return 1/(1 + math.exp(-x))
 
 def derivate(x):
@@ -42,18 +56,24 @@ def learnOne(data):
     tmpErrors = []
     tmpXs = []
     y = data[-1]
+
     for i in range(len(inputsWeights)):
         weights = inputsWeights[i]
         biasWeight = hiddenLayerBiasWeights[i]
         tmpX = sum(np.array(data[:-1]) * weights) + biasWeight
         prediction = sigmoid(tmpX)
-        error = predictionError(prediction, y)
         tmpXs.append(tmpX)
         tmpPredictions.append(prediction)
-        tmpErrors.append(error)
-    tmpFinalX = sum(np.array(tmpErrors) * hiddenLayerWeights) + finalBiasWeight
+
+    tmpFinalX = sum(np.array(tmpXs) * hiddenLayerWeights) + finalBiasWeight
     tmpFinalPrediction = sigmoid(tmpFinalX)
     tmpFinalError = predictionError(tmpFinalPrediction, y)
+
+    for i in range(len(inputsWeights)):
+        weights = inputsWeights[i]
+        error = tmpFinalError * hiddenLayerWeights[i]
+        tmpErrors.append(error)
+
     return tmpFinalPrediction, tmpFinalError, tmpFinalX, tmpPredictions, tmpErrors, tmpXs
 
 def predictionError(prediction, dataTarget):
@@ -61,6 +81,7 @@ def predictionError(prediction, dataTarget):
 
 def retropropagation(errors, finalError, data):
     global finalBiasWeight
+
 
     tmpFinalSum = sum(np.array(errors) * hiddenLayerWeights) + finalBiasWeight
     tmpFinalCorrection = learningConstant * finalError * derivate(tmpFinalSum)
