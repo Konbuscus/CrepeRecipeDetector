@@ -16,6 +16,7 @@ finalBiasWeight = 0
 
 def parseDataFile(pFile):
     global header
+    global inputData
 
     f = open(pFile, 'r')
     header = f.readline().split(';')
@@ -23,6 +24,8 @@ def parseDataFile(pFile):
     for line in f.readlines():
         inputData.append(map(int, line.split(';')))
     f.close()
+
+    random.shuffle(inputData)
 
 def addDataToCSV(pFile, data):
     f = open(pFile, 'a')
@@ -106,4 +109,5 @@ def main():
 
     print inputsWeights
 
-main()
+if __name__ == '__main__':
+    main()

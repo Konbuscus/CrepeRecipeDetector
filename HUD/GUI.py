@@ -1,10 +1,14 @@
+import os, sys, inspect
+sys.path.append('../Core')
+import core
+
 import Tkinter as tk
+from tkinter import filedialog
 import pygubu
 
 
 class Application:
     def __init__(self, master):
-
         #1: Create a builder
         self.builder = builder = pygubu.Builder()
 
@@ -13,6 +17,72 @@ class Application:
 
         #3: Create the widget using a master as parent
         self.mainwindow = builder.get_object('Frame_1', master)
+
+        builder.connect_callbacks(self)
+
+        self.builder = builder
+
+    def on_file_choose_click(self):
+        file_path = filedialog.askopenfilename()
+
+        tb = self.builder.get_object('Path')
+        tb.delete(0, 1000)
+        tb.insert(0, file_path)
+
+    def on_add_click(self):
+        tb = self.builder.get_object('Path')
+        path = tb.get()
+        if path == '':
+            return
+        try:
+            print 'ok !'
+
+            #print self.builder.objects
+            fields = []
+            for i in self.builder.objects:
+                if i == 'Path':
+                    continue
+                obj = self.builder.objects[i]
+                if type(obj) == pygubu.builder.tkstdwidgets.TKEntry:
+                    tmp = self.builder.get_object(i)
+                    fields.append([tmp.get(), int(tmp.grid_info()['row'])])
+                    tmp.delete(0, 1000)
+                    tmp.insert(0, '0')
+            fields = sorted(fields, key=lambda x:x[1])
+            fields = [x[0] for x in fields]
+
+            f = open(path, 'a')
+            f.write('\n' + ';'.join(fields))
+            f.close()
+        except IOError:
+            print 'error'
+
+    def on_load_CSV_click(self):
+        tb = self.builder.get_object('Path')
+        path = tb.get()
+
+        try:
+            core.init(path)
+            print 'Initialised !'
+
+            print 'Base weights : '
+            print core.hiddenLayerWeights
+
+            for i in range(len(core.inputData)):
+                data = core.inputData[i]
+
+                print 'Load line ', i
+                tmpFinalPrediction, tmpFinalError, tmpFinalX, tmpPredictions, tmpErrors, tmpFinalX = core.learnOne(data)
+                print "prediction : ", tmpFinalPrediction
+                print "error : ", tmpFinalError
+
+                core.retropropagation(tmpErrors, tmpFinalError, data)
+
+            print 'Final weights : '
+            print core.hiddenLayerWeights
+
+        except IOError:
+            print 'error'
 
 
 if __name__ == '__main__':
